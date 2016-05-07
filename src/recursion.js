@@ -19,21 +19,22 @@ var sum = function(array, index) {
 // Example: arraySum([1,[2,3],[[4]],5]); // 15
 var arraySum = function(array, index) {
   index = index || 0;
-  return index === array.length ? 0 : Array.isArray(array[index]) ? arraySum(array[index]) : array[index] + sum(array, index+1);
+  return index === array.length ? 0 : arraySum(array, index+1) + (Array.isArray(array[index]) ? arraySum(array[index]) : array[index]);
 };
 
 // 4. Check if a number is even.
 var isEven = function(n) {
-  if (n === 2) {
-    return true;
-  } 
-  isEven(n/2);
+  return n === 0 ? true : n === 1 ? false : isEven(Math.abs(n)-2);
 };
 
 // 5. Sum all integers below a given integer.
 // sumBelow(10); // 45
 // sumBelow(7); // 21
 var sumBelow = function(n) {
+  if (n === 0) {
+    return 0;
+  }
+  return n < 0 ? (n+1) + sumBelow(n+1) : (n-1) + sumBelow(n-1);
 };
 
 // 6. Get the integers in range (x, y).
