@@ -69,7 +69,15 @@ var exponent = function(base, exp) {
 // powerOfTwo(1); // true
 // powerOfTwo(16); // true
 // powerOfTwo(10); // false
-var powerOfTwo = function(n) {
+var powerOfTwo = function(n, num) { // is there an easier way?
+  num = num || 2;
+  if (n === 1 || num === n) {
+    return true;
+  }
+  if (num > n) {
+    return false;
+  }
+  return powerOfTwo(n, num*2);
 };
 
 // 9. Write a function that accepts a string a reverses it.
