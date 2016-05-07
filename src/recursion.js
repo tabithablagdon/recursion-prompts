@@ -37,16 +37,16 @@ var sumBelow = function(n) {
 // 6. Get the integers in range (x, y).
 // Example:  range(2, 9);  // [3, 4, 5, 6, 7, 8]
 var range = function(x, y) {
-  var arr = [];
-  if (x === y-1 || Math.abs(y-x) <=1) {
-    return arr;
+  var result = []; // can be re-written with result as a 3rd parameter
+  if (x === y-1 || Math.abs(y-x) <= 1) {
+    return result;
   }
   if (x < y) {
-    arr.push(x+1);
-    return arr.concat(range(x+1, y));
+    result.push(x+1);
+    return result.concat(range(x+1, y));
   } else {
-    arr.push(x-1);
-    return arr.concat(range(x-1, y));
+    result.push(x-1);
+    return result.concat(range(x-1, y));
   }
 };
 
@@ -56,6 +56,13 @@ var range = function(x, y) {
 // Example:  exponent(4,3);  // 64
 // https://www.khanacademy.org/computing/computer-science/algorithms/recursive-algorithms/a/computing-powers-of-a-number
 var exponent = function(base, exp) {
+  if (exp === 0) {
+    return 1;
+  }
+  if (exp === 1) {
+    return base;
+  }
+  return exp > 0 ? base * exponent(base, exp-1) : +(1/base * exponent(base, exp+1)).toFixed(5);
 };
 
 // 8. Determine if a number is a power of two.
