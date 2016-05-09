@@ -393,7 +393,7 @@ var numToText = function(str, newStr) {
     0: 'zero'
   };
   if (str.length === 0) {
-    return newStr;  
+    return newStr;
   }
   newStr += nums.hasOwnProperty(str.charAt(0)) ? nums[str.charAt(0)] : str.charAt(0);
   return numToText(str.slice(1), newStr);
@@ -416,4 +416,41 @@ var binarySearch = function(array, target, min, max) {
 // Sample array:  [34,7,23,32,5,62]
 // Sample output: [5,7,23,32,34,62]
 var mergeSort = function(array) {
+  var merge = function(left, right) {
+    var result = []
+      , leftIndex = 0
+      , rightIndex = 0;
+
+    while (leftIndex < left.length && rightIndex < right.length) {
+      if (left[leftIndex] < right[rightIndex]) {
+        result.push(left[leftIndex]);
+        leftIndex++;
+      } else {
+        result.push(right[rightIndex]);
+        rightIndex++;
+      }
+    }
+    while (leftIndex < left.length) {
+      result.push(left[leftIndex]);
+      leftIndex++;
+    }
+    while (rightIndex < right.length) {
+      result.push(right[rightIndex]);
+      rightIndex++;
+    }
+    return result;
+  };
+
+  var mSort = function(arr) {
+    if (arr.length === 1) {
+      return arr;
+    }
+    var mid = arr.length/2;
+    var left = arr.slice(0, mid);
+    var right = arr.slice(mid);
+
+    return merge(mSort(left), mSort(right));
+  };
+
+  return mSort(array);
 };
