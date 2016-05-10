@@ -96,32 +96,51 @@ var palindrome = function(string) {
 // modulo(5,2) // 1
 // modulo(17,5) // 2
 // modulo(22,6) // 4
-var modulo = function(x, y) { // needs work...
-  if (x < 0 && y < 0) {
-    if (-y > -x ) {
-      return x;
-    }
+var modulo = function(x, y) {
+  var isNeg = false;
+  if (y === 0) {
+    return NaN;
+  }
+  if (x < 0) {
+  	isNeg = true;
+  	x = -x;
+  }
+  if (y < 0) {
+  	y = -y;
+  }
+  if (x < y) {
+  	return isNeg ? -x : x;
   } else {
-    if (y > x) {
-      return x;
-    } else if (x === 0 && y === 0) {
-      return NaN;
-    }
+    return isNeg ? -modulo(x-y,y) : modulo(x-y,y);
   }
-  if (x - y < y) {
-    return x - y;
-  }
-  return modulo(x-y, y);
 };
+
 
 // 12. Write a function that multiplies two numbers without using the * operator  or
 // JavaScript's Math object.
 var multiply = function(x, y) {
+  if (x === 0 || y === 0) {
+    return 0;
+  }
+  return y < 0 ? -multiply(x, -y) : x + multiply(x, y-1);
 };
 
 // 13. Write a function that divides two numbers without using the / operator  or
 // JavaScript's Math object.
-var divide = function(x, y) {
+var divide = function(x, y, count) {
+  if (x === 0 && y === 0) {
+    return NaN;
+  }
+  if (x < 0) {
+    return -divide(-x, y);
+  }
+  if (y < 0) {
+    return -divide(x, -y);
+  }
+  if (x < y) {
+  	return 0;
+  }
+  return 1 + divide(x-y, y);
 };
 
 // 14. Find the greatest common divisor (gcd) of two positive numbers.  The GCD of two
@@ -130,6 +149,17 @@ var divide = function(x, y) {
 // http://www.cse.wustl.edu/~kjg/cse131/Notes/Recursion/recursion.html
 // https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/the-euclidean-algorithm
 var gcd = function(x, y) {
+  // Dijkstra's algorithm
+  if (x < 0 || y < 0) {
+    return null;
+  }
+  if (x === y) {
+    return x;
+  } else if (x > y) {
+    return gcd(x-y, y);
+  } else {
+    return gcd(x, y-x);
+  }
 };
 
 // 15. Write a function that compares each character of two strings and returns true if
@@ -324,11 +354,10 @@ var compress = function(list, result) { // this works?  Why not passing test?
   if (list.length === 0) {
     return result;
   }
-  var num = list.shift();
-  if (result[result.length - 1] !== num) {
-    result.push(num);
+  if (result[result.length - 1] !== list[0]) {
+    result.push(list[0]);
   }
-  return compress(list, result);
+  return compress(list.slice(1), result);
 };
 
 // 32. Augument every element in a list with a new value where each element is an array
@@ -417,9 +446,9 @@ var binarySearch = function(array, target, min, max) {
 // Sample output: [5,7,23,32,34,62]
 var mergeSort = function(array) {
   var merge = function(left, right) {
-    var result = []
-      , leftIndex = 0
-      , rightIndex = 0;
+    var result = [],
+      leftIndex = 0,
+      rightIndex = 0;
 
     while (leftIndex < left.length && rightIndex < right.length) {
       if (left[leftIndex] < right[rightIndex]) {
