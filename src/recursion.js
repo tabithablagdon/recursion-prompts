@@ -149,17 +149,22 @@ var divide = function(x, y, count) {
 // http://www.cse.wustl.edu/~kjg/cse131/Notes/Recursion/recursion.html
 // https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/the-euclidean-algorithm
 var gcd = function(x, y) {
-  // Dijkstra's algorithm
   if (x < 0 || y < 0) {
     return null;
   }
+  // Dijkstra's algorithm
   if (x === y) {
     return x;
-  } else if (x > y) {
-    return gcd(x-y, y);
   } else {
-    return gcd(x, y-x);
+    return x > y ? gcd(x-y, y) : gcd(x, y-x);
   }
+  // Alternate solution using Euclid's Algorithm
+  /*
+  if (x > y) {
+    return x % y === 0 ? y : gcd(y, x%y);
+  } else {
+    return y % x === 0 ? x : gcd(x, y%x);
+  }*/
 };
 
 // 15. Write a function that compares each character of two strings and returns true if
@@ -167,9 +172,9 @@ var gcd = function(x, y) {
 // compareStr('house', 'houses') // false
 // compareStr('', '') // true
 // compareStr('tomato', 'tomato') // true
-var compareStr = function(str1, str2) { // needs work
-  if (str1.length !== str2.length) {
-    return false;
+var compareStr = function(str1, str2) {
+  if (str1.length === 0 && str2.length ===0) {
+    return true;
   }
   if (str1.length === 1) {
     return str1 === str2;
@@ -177,7 +182,7 @@ var compareStr = function(str1, str2) { // needs work
   if (str1[0] !== str2[0]) {
     return false;
   }
-  compareStr(str1.slice(1), str2.slice(1));
+  return compareStr(str1.slice(1), str2.slice(1));
 };
 
 // 16. Write a function that accepts a string and creates an array where each letter
@@ -243,6 +248,16 @@ var rMap = function(array, callback) {
 // countKeysInObj(testobj, 'r') // 1
 // countKeysInObj(testobj, 'e') // 2
 var countKeysInObj = function(obj, key) {
+  var count = 0;
+  for (var k in obj) {
+    if (k === key) {
+      count++;
+    }
+    if (typeof obj[k] === 'object' && obj[k] !== null) {
+      count += countKeysInObj(obj[k], key);
+    }
+  }
+  return count;
 };
 
 // 22. Write a function that counts the number of times a value occurs in an object.
@@ -250,11 +265,30 @@ var countKeysInObj = function(obj, key) {
 // countValuesInObj(testobj, 'r') // 2
 // countValuesInObj(testobj, 'e') // 1
 var countValuesInObj = function(obj, value) {
+  var count = 0;
+  for (var key in obj) {
+    if (obj[key] === value) {
+      count++;
+    }
+    if (typeof obj[key] === 'object' && obj[key] !== null) {
+      count += countValuesInObj(obj[key], value);
+    }
+  }
+  return count;
 };
 
 // 23. Find all keys in an object (and nested objects) by a provided name and rename
 // them to a provided new name while preserving the value stored at that key.
 var replaceKeysInObj = function(obj, key, newKey) {
+  var newObj = {};
+  for (var k in obj) {
+    if (typeof obj[k] === 'object' && obj[k] !== null) {
+      newObj[newKey] = replaceKeysInObj(obj[k], key, newKey);
+    } else {
+      newObj[newKey] = obj[k];
+    }
+  }
+  return newObj;
 };
 
 // 24. Get the first n Fibonacci numbers.  In the Fibonacci Sequence, each subsequent
@@ -262,7 +296,26 @@ var replaceKeysInObj = function(obj, key, newKey) {
 // Example:  0, 1, 1, 2, 3, 5, 8, 13, 21, 34.....
 // fibonacci(5);  // [0, 1, 1, 2, 3, 5]
 // Note:  The 0 is not counted.
-var fibonacci = function(n) {
+var fibonacci = function(n, result) {
+  result = result || [];
+
+  var getFib = function(n) {
+    if (n < 2) {
+  	  return n;
+    }
+    return getFib(n-1) + getFib(n-2);
+  };
+    if (n <= 0) {
+    return null;
+  }
+  if (n === 1) {
+    result.unshift(0, 1);
+    return result;
+  }
+
+  result.unshift(getFib(n));
+  return fibonacci(n-1, result);
+
 };
 
 // 25. Return the Fibonacci number located at index n of the Fibonacci sequence.
@@ -271,6 +324,13 @@ var fibonacci = function(n) {
 // nthFibo(7); // 13
 // nthFibo(3); // 2
 var nthFibo = function(n) {
+  if (n < 0) {
+    return null;
+  }
+  if (n < 2) {
+    return n;
+  }
+  return nthFibo(n-1) + nthFibo(n-2);
 };
 
 // 26. Given an array of words, return a new array containing each word capitalized.
@@ -307,15 +367,12 @@ var capitalizeFirst = function(array, result) {
 // };
 // nestedEvenSum(obj1); // 10
 var nestedEvenSum = function(obj) { // needs work
-  sum = sum || 0;
+  var sum = 0;
   for (var key in obj) {
-  	if (!obj.hasOwnProperty(key)) {
-  	  continue;
-  	}
     if (typeof obj[key] === 'number' && obj[key] % 2 === 0) {
       sum += obj[key];
-    } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-      nestedEvenSum(obj[key], sum);
+    } else if (typeof obj[key] === 'object') {
+      sum += nestedEvenSum(obj[key]);
     }
   }
   return sum;
